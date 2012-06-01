@@ -1,0 +1,102 @@
+<?xml version='1.0'?>
+<project name="Gitana JSdoc" basedir="." default="generate-all">
+
+    <!-- load properties from file -->
+    <property file="custom-deployment.properties"/>
+
+    <property file="deployment.properties"/>
+
+    <property name="project.dir" value="."/>
+    <property name="build.dir" value="${project.dir}/build"/>
+
+    <target name="clean" description="Removes all generated files">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="setup" depends="clean" description="Creates the ${build.dir} directory">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/alpaca"/>
+        <mkdir dir="${build.dir}/gitana-javascript-driver"/>
+    </target>
+
+    <target name="generate-jsdoc" depends="setup" description="generate javascript doc">
+        <java dir="." fork="true" jar="jsdoc-toolkit/jsrun.jar">
+            <arg line="jsdoc-toolkit/app/run.js -d=${build.dir}/${productKey}/${version} -D='noGlobal:true' -D='title:${productTitle}' -D='index:files' -t=jsdoc-toolkit/templates/codeview -v ${dev.root}/${productKey}/target/${productKey}-${version}/${jsLocation}/${jsFile}"/>
+        </java>
+    </target>
+
+    <target name="generate-jsdoc-alpaca">
+        <antcall target="generate-jsdoc">
+            <param name="productKey" value="alpaca"/>
+            <param name="productTitle" value="Alpaca Forms"/>
+            <param name="jsLocation" value="alpaca/js"/>
+            <param name="jsFile" value="alpaca-${alpaca.version}.js"/>
+            <param name="version" value="${alpaca.version}"/>
+        </antcall>
+    </target>
+
+    <target name="generate-jsdoc-gitana-javascript-driver">
+        <antcall target="generate-jsdoc">
+            <param name="productKey" value="gitana-javascript-driver"/>
+            <param name="productTitle" value="Cloud CMS JavaScript Driver"/>
+            <param name="jsLocation" value="js"/>
+            <param name="jsFile" value="gitana.js"/>
+            <param name="version" value="${gitana-javascript-driver.version}"/>
+        </antcall>
+    </target>
+
+    <target name="generate-all" depends="generate-jsdoc-alpaca,generate-jsdoc-gitana-javascript-driver">
+    </target>
+
+    <target name="unpublish-jsdoc-alpaca">
+        <sshexec host="${code.cloudcms.host}"
+                 username="${code.cloudcms.username}"
+                 keyfile="${code.cloudcms.keyfile}"
+                 trust="true"
+                 command="rm -r ${code.cloudcms.alpaca.jsdoc.basepath}/${alpaca.version}/*"
+                 failonerror="false"/>
+    </target>
+
+    <target name="publish-jsdoc-alpaca" depends="unpublish-jsdoc-alpaca">
+
+        <scp todir="${code.cloudcms.username}@${code.cloudcms.host}:${code.cloudcms.alpaca.jsdoc.basepath}"
+             keyfile="${code.cloudcms.keyfile}"
+             trust="true"
+             verbose="true"
+             passphrase="${code.cloudcms.passphrase}"
+             failonerror="true">
+
+            <fileset dir="${build.dir}/alpaca">
+            </fileset>
+
+        </scp>
+
+    </target>
+
+
+    <target name="unpublish-jsdoc-gitana-javascript-driver">
+        <sshexec host="${code.cloudcms.host}"
+                 username="${code.cloudcms.username}"
+                 keyfile="${code.cloudcms.keyfile}"
+                 trust="true"
+                 command="rm -r ${code.cloudcms.gitana-javascript-driver.jsdoc.basepath}/${gitana-javascript-driver.version}/*"
+                 failonerror="false"/>
+    </target>
+
+    <target name="publish-jsdoc-gitana-javascript-driver" depends="unpublish-jsdoc-gitana-javascript-driver">
+
+        <scp todir="${code.cloudcms.username}@${code.cloudcms.host}:${code.cloudcms.gitana-javascript-driver.jsdoc.basepath}"
+             keyfile="${code.cloudcms.keyfile}"
+             trust="true"
+             verbose="true"
+             passphrase="${code.cloudcms.passphrase}"
+             failonerror="true">
+
+            <fileset dir="${build.dir}/gitana-javascript-driver">
+            </fileset>
+
+        </scp>
+
+    </target>
+
+</project>
