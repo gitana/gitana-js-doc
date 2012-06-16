@@ -53,7 +53,7 @@
                  username="${code.cloudcms.username}"
                  keyfile="${code.cloudcms.keyfile}"
                  trust="true"
-                 command="rm -r ${code.cloudcms.alpaca.jsdoc.basepath}/${alpaca.version}/*"
+                 command="rm -r ${code.cloudcms.alpaca.jsdoc.basepath}/*"
                  failonerror="false"/>
     </target>
 
@@ -66,7 +66,7 @@
              passphrase="${code.cloudcms.passphrase}"
              failonerror="true">
 
-            <fileset dir="${build.dir}/alpaca">
+            <fileset dir="${build.dir}/alpaca/${alpaca.version}">
             </fileset>
 
         </scp>
