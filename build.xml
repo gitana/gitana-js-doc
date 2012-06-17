@@ -2,9 +2,9 @@
 <project name="Gitana JSdoc" basedir="." default="generate-all">
 
     <!-- load properties from file -->
-    <property file="custom-deployment.properties"/>
+    <property file="custom-build.properties"/>
 
-    <property file="deployment.properties"/>
+    <property file="build.properties"/>
 
     <property name="project.dir" value="."/>
     <property name="build.dir" value="${project.dir}/build"/>
@@ -19,7 +19,7 @@
         <mkdir dir="${build.dir}/gitana-javascript-driver"/>
     </target>
 
-    <target name="generate-jsdoc" depends="setup" description="generate javascript doc">
+    <target name="generate-jsdoc" depends="" description="generate javascript doc">
         <java dir="." fork="true" jar="jsdoc-toolkit/jsrun.jar">
             <arg line="jsdoc-toolkit/app/run.js -d=${build.dir}/${productKey}/${version} -D='noGlobal:true' -D='title:${productTitle}' -D='index:files' -t=jsdoc-toolkit/templates/codeview -v ${dev.root}/${productKey}/target/${productKey}-${version}/${jsLocation}/${jsFile}"/>
         </java>
@@ -45,58 +45,7 @@
         </antcall>
     </target>
 
-    <target name="generate-all" depends="generate-jsdoc-alpaca,generate-jsdoc-gitana-javascript-driver">
-    </target>
-
-    <target name="unpublish-jsdoc-alpaca">
-        <sshexec host="${code.cloudcms.host}"
-                 username="${code.cloudcms.username}"
-                 keyfile="${code.cloudcms.keyfile}"
-                 trust="true"
-                 command="rm -r ${code.cloudcms.alpaca.jsdoc.basepath}/*"
-                 failonerror="false"/>
-    </target>
-
-    <target name="publish-jsdoc-alpaca" depends="unpublish-jsdoc-alpaca">
-
-        <scp todir="${code.cloudcms.username}@${code.cloudcms.host}:${code.cloudcms.alpaca.jsdoc.basepath}"
-             keyfile="${code.cloudcms.keyfile}"
-             trust="true"
-             verbose="true"
-             passphrase="${code.cloudcms.passphrase}"
-             failonerror="true">
-
-            <fileset dir="${build.dir}/alpaca/${alpaca.version}">
-            </fileset>
-
-        </scp>
-
-    </target>
-
-
-    <target name="unpublish-jsdoc-gitana-javascript-driver">
-        <sshexec host="${code.cloudcms.host}"
-                 username="${code.cloudcms.username}"
-                 keyfile="${code.cloudcms.keyfile}"
-                 trust="true"
-                 command="rm -r ${code.cloudcms.gitana-javascript-driver.jsdoc.basepath}/${gitana-javascript-driver.version}/*"
-                 failonerror="false"/>
-    </target>
-
-    <target name="publish-jsdoc-gitana-javascript-driver" depends="unpublish-jsdoc-gitana-javascript-driver">
-
-        <scp todir="${code.cloudcms.username}@${code.cloudcms.host}:${code.cloudcms.gitana-javascript-driver.jsdoc.basepath}"
-             keyfile="${code.cloudcms.keyfile}"
-             trust="true"
-             verbose="true"
-             passphrase="${code.cloudcms.passphrase}"
-             failonerror="true">
-
-            <fileset dir="${build.dir}/gitana-javascript-driver">
-            </fileset>
-
-        </scp>
-
+    <target name="generate-all" depends="setup,generate-jsdoc-alpaca,generate-jsdoc-gitana-javascript-driver">
     </target>
 
 </project>
