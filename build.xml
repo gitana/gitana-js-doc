@@ -2,7 +2,8 @@
 <project name="Gitana JSdoc" basedir="." default="generate-all">
 
     <!-- load properties from file -->
-    <property file="custom-build.properties"/>
+    <property file="custom-build-alpaca.properties"/>
+    <property file="custom-build-javascript-driver.properties"/>
 
     <property file="build.properties"/>
 
@@ -19,18 +20,35 @@
         <mkdir dir="${build.dir}/gitana-javascript-driver"/>
     </target>
 
-    <target name="generate-jsdoc" depends="" description="generate javascript doc">
+    <target name="generate-jsdoc-old" depends="" description="generate javascript doc">
         <java dir="." fork="true" jar="jsdoc-toolkit/jsrun.jar">
             <arg line="jsdoc-toolkit/app/run.js -d=${build.dir}/${productKey}/${version} -D='noGlobal:true' -D='title:${productTitle}' -D='index:files' -t=jsdoc-toolkit/templates/codeview -v ${dev.root}/${productKey}/target/${productKey}-${version}/${jsLocation}/${jsFile}"/>
         </java>
+    </target>
+
+    <target name="generate-jsdoc" depends="" description="generate javascript doc">
+        <delete dir="${build.dir}/${productKey}/${version}"/>
+        <java dir="." fork="true" jar="jsdoc-toolkit/jsrun.jar">
+            <arg line="jsdoc-toolkit/app/run.js -d=${build.dir}/${productKey}/${version} -D='noGlobal:true' -D='title:${productTitle}' -D='index:files' -t=jsdoc-toolkit/templates/codeview -v ${dev.root}/${productKey}/build/package/${jsLocation}/${jsFile}"/>
+        </java>
+    </target>
+
+    <target name="generate-jsdoc-alpaca-old">
+        <antcall target="generate-jsdoc-old">
+            <param name="productKey" value="alpaca"/>
+            <param name="productTitle" value="Alpaca Forms"/>
+            <param name="jsLocation" value="alpaca/js"/>
+            <param name="jsFile" value="alpaca-${alpaca.version}.js"/>
+            <param name="version" value="${alpaca.version}"/>
+        </antcall>
     </target>
 
     <target name="generate-jsdoc-alpaca">
         <antcall target="generate-jsdoc">
             <param name="productKey" value="alpaca"/>
             <param name="productTitle" value="Alpaca Forms"/>
-            <param name="jsLocation" value="alpaca/js"/>
-            <param name="jsFile" value="alpaca-${alpaca.version}.js"/>
+            <param name="jsLocation" value="js"/>
+            <param name="jsFile" value="alpaca-full.js"/>
             <param name="version" value="${alpaca.version}"/>
         </antcall>
     </target>
