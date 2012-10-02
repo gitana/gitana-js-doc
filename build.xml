@@ -14,7 +14,7 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <target name="setup" depends="clean" description="Creates the ${build.dir} directory">
+    <target name="setup" depends="" description="Creates the ${build.dir} directory">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.dir}/alpaca"/>
         <mkdir dir="${build.dir}/gitana-javascript-driver"/>
@@ -26,7 +26,7 @@
         </java>
     </target>
 
-    <target name="generate-jsdoc" depends="" description="generate javascript doc">
+    <target name="generate-jsdoc" depends="setup" description="generate javascript doc">
         <delete dir="${build.dir}/${productKey}/${version}"/>
         <java dir="." fork="true" jar="jsdoc-toolkit/jsrun.jar">
             <arg line="jsdoc-toolkit/app/run.js -d=${build.dir}/${productKey}/${version} -D='noGlobal:true' -D='title:${productTitle}' -D='index:files' -t=jsdoc-toolkit/templates/codeview -v ${dev.root}/${productKey}/build/package/${jsLocation}/${jsFile}"/>
